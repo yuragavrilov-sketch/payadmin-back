@@ -1,0 +1,14 @@
+.git
+.gitignore
+.gitlab-ci.yml
+*.md
+src
+keycloak
+docker-compose.yml
+helm
+target
+.idea
+.vscode
+.DS_Store
+*.log
+settings.xml

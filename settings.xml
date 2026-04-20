@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>esb-group</id>
+                    <name>esb-group</name>
+                    <url>https://nexus.online.tkbbank.ru/repository/esb-group/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>warn</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>warn</checksumPolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>esb-group</id>
+                    <name>esb-group</name>
+                    <url>https://nexus.online.tkbbank.ru/repository/esb-group/</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <!--
+      Креды для Nexus (login/password) пробрасываются через CI variables:
+      NEXUS_USERNAME / NEXUS_PASSWORD — Maven подхватит через -Dsettings
+      или envvars, если так настроено в шаблоне Java CI. Здесь оставляем
+      пусто, чтобы случайно не закоммитить секрет.
+    -->
+    <servers>
+        <server>
+            <id>esb-group</id>
+            <username>${env.NEXUS_USERNAME}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
