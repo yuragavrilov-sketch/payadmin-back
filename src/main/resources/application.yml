@@ -13,6 +13,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
+        default_schema: ${DB_SCHEMA:pay_admin}
         jdbc.time_zone: UTC
         format_sql: false
 
@@ -20,6 +21,9 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+    schemas: ${DB_SCHEMA:pay_admin}
+    default-schema: ${DB_SCHEMA:pay_admin}
+    create-schemas: true
 
   security:
     oauth2:

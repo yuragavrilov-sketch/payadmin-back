@@ -1,8 +1,11 @@
 -- Платёж: схема админ-панели оператора
 -- Хранит ТОЛЬКО операторские данные (audit, заметки, сохранённые виды).
 -- Бизнес-данные (транзакции, мерчанты, споры) живут в core-БД платёжки.
-
-create extension if not exists "pgcrypto";
+--
+-- Схема создаётся Flyway при первом запуске (spring.flyway.create-schemas=true,
+-- имя в spring.flyway.schemas), поэтому тут без CREATE SCHEMA — всё создастся
+-- внутри неё. gen_random_uuid() встроен в Postgres 13+, extension pgcrypto
+-- не нужен (избегаем прав superuser).
 
 -- Кэш профиля оператора из Keycloak.
 -- keycloak_sub — это `sub` из JWT, неизменный для пользователя.
