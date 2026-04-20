@@ -1,0 +1,106 @@
+package ru.platezh.admin.note;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.*;
+import ru.platezh.admin.audit.AuditService;
+import ru.platezh.admin.common.CurrentOperator;
+import ru.platezh.admin.operator.Operator;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/notes")
+@RequiredArgsConstructor
+public class NoteController {
+
+    private final InternalNoteRepository repository;
+    private final CurrentOperator currentOperator;
+    private final AuditService auditService;
+
+    @GetMapping
+    public List<NoteDto> list(@RequestParam String entityType, @RequestParam String entityId) {
+        return repository.findByEntityTypeAndEntityIdOrderByCreatedAtDesc(entityType, entityId)
+                .stream().map(NoteDto::from).toList();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public NoteDto create(@Valid @RequestBody CreateRequest req, HttpServletRequest http) {
+        Operator op = currentOperator.get();
+        InternalNote note = repository.save(InternalNote.builder()
+                .operator(op)
+                .entityType(req.entityType())
+                .entityId(req.entityId())
+                .body(req.body())
+                .build());
+        auditService.record(op, "note.create", req.entityType(), req.entityId(),
+                Map.of("noteId", note.getId().toString()), http);
+        return NoteDto.from(note);
+    }
+
+    @PutMapping("/{id}")
+    public NoteDto update(@PathVariable UUID id, @Valid @RequestBody UpdateRequest req, HttpServletRequest http) {
+        Operator op = currentOperator.get();
+        InternalNote note = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!note.getOperator().getId().equals(op.getId())) {
+            throw new AccessDeniedException("Можно редактировать только свои заметки");
+        }
+        note.setBody(req.body());
+        InternalNote saved = repository.save(note);
+        auditService.record(op, "note.update", note.getEntityType(), note.getEntityId(),
+                Map.of("noteId", id.toString()), http);
+        return NoteDto.from(saved);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id, HttpServletRequest http) {
+        Operator op = currentOperator.get();
+        InternalNote note = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        if (!note.getOperator().getId().equals(op.getId())) {
+            throw new AccessDeniedException("Можно удалять только свои заметки");
+        }
+        repository.delete(note);
+        auditService.record(op, "note.delete", note.getEntityType(), note.getEntityId(),
+                Map.of("noteId", id.toString()), http);
+    }
+
+    public record CreateRequest(
+            @NotBlank String entityType,
+            @NotBlank String entityId,
+            @NotBlank String body
+    ) {}
+
+    public record UpdateRequest(@NotBlank String body) {}
+
+    public record NoteDto(
+            UUID id,
+            String operatorName,
+            String entityType,
+            String entityId,
+            String body,
+            Instant createdAt,
+            Instant updatedAt
+    ) {
+        static NoteDto from(InternalNote n) {
+            return new NoteDto(
+                    n.getId(),
+                    n.getOperator().getDisplayName(),
+                    n.getEntityType(),
+                    n.getEntityId(),
+                    n.getBody(),
+                    n.getCreatedAt(),
+                    n.getUpdatedAt()
+            );
+        }
+    }
+}

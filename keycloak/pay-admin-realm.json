@@ -1,0 +1,57 @@
+{
+  "realm": "pay-admin",
+  "enabled": true,
+  "displayName": "Платёж · Админ",
+  "accessTokenLifespan": 1800,
+  "ssoSessionIdleTimeout": 7200,
+  "ssoSessionMaxLifespan": 36000,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "operator", "description": "Оператор админ-панели" },
+      { "name": "admin",    "description": "Администратор" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "pay-admin-web",
+      "name": "Платёж · Web Admin",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://localhost:4173/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://localhost:4173"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "+"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "operator",
+      "email": "operator@platezh.ru",
+      "firstName": "Юра",
+      "lastName": "Гаврилов",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        { "type": "password", "value": "operator", "temporary": false }
+      ],
+      "realmRoles": ["operator"]
+    }
+  ]
+}
