@@ -1,4 +1,4 @@
-package ru.platezh.admin.note;
+package ru.copperside.admin.note;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

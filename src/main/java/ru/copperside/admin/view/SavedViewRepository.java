@@ -1,4 +1,4 @@
-package ru.platezh.admin.view;
+package ru.copperside.admin.view;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

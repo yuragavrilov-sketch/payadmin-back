@@ -1,4 +1,4 @@
-package ru.platezh.admin.view;
+package ru.copperside.admin.view;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import ru.platezh.admin.common.CurrentOperator;
-import ru.platezh.admin.operator.Operator;
+import ru.copperside.admin.common.CurrentOperator;
+import ru.copperside.admin.operator.Operator;
 
 import java.time.Instant;
 import java.util.List;

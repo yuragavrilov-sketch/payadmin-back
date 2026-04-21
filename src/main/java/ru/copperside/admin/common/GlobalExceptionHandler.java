@@ -1,4 +1,4 @@
-package ru.platezh.admin.common;
+package ru.copperside.admin.common;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

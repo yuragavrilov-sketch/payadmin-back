@@ -1,4 +1,4 @@
-package ru.platezh.admin.operator;
+package ru.copperside.admin.operator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;

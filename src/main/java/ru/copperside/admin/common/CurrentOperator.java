@@ -1,12 +1,12 @@
-package ru.platezh.admin.common;
+package ru.copperside.admin.common;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-import ru.platezh.admin.operator.Operator;
-import ru.platezh.admin.operator.OperatorService;
+import ru.copperside.admin.operator.Operator;
+import ru.copperside.admin.operator.OperatorService;
 
 /**
  * Достаёт текущего оператора из SecurityContext, синхронизируя профиль из JWT при необходимости.

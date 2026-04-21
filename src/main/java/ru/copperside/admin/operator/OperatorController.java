@@ -1,10 +1,10 @@
-package ru.platezh.admin.operator;
+package ru.copperside.admin.operator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.platezh.admin.common.CurrentOperator;
+import ru.copperside.admin.common.CurrentOperator;
 
 import java.time.Instant;
 import java.util.UUID;

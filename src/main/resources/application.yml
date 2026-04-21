@@ -47,4 +47,4 @@ management:
 logging:
   level:
     org.springframework.security: INFO
-    ru.platezh.admin: DEBUG
+    ru.copperside.admin: DEBUG

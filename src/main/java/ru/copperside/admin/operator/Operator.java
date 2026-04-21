@@ -1,4 +1,4 @@
-package ru.platezh.admin.operator;
+package ru.copperside.admin.operator;
 
 import jakarta.persistence.*;
 import lombok.*;

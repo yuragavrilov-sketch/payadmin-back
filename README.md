@@ -49,7 +49,7 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:8081/api/me
 ## Структура
 
 ```
-src/main/java/ru/platezh/admin/
+src/main/java/ru/copperside/admin/
 ├── PayAdminApplication.java
 ├── config/SecurityConfig.java       JWT resource server + CORS + role mapping
 ├── common/

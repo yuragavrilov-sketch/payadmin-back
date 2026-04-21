@@ -1,4 +1,4 @@
-package ru.platezh.admin.note;
+package ru.copperside.admin.note;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
-import ru.platezh.admin.audit.AuditService;
-import ru.platezh.admin.common.CurrentOperator;
-import ru.platezh.admin.operator.Operator;
+import ru.copperside.admin.audit.AuditService;
+import ru.copperside.admin.common.CurrentOperator;
+import ru.copperside.admin.operator.Operator;
 
 import java.time.Instant;
 import java.util.List;

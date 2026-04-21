@@ -1,4 +1,4 @@
-package ru.platezh.admin;
+package ru.copperside.admin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

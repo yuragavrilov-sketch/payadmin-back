@@ -1,8 +1,8 @@
-package ru.platezh.admin.note;
+package ru.copperside.admin.note;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.platezh.admin.operator.Operator;
+import ru.copperside.admin.operator.Operator;
 
 import java.time.Instant;
 import java.util.UUID;

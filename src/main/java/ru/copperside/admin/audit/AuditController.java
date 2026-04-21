@@ -1,4 +1,4 @@
-package ru.platezh.admin.audit;
+package ru.copperside.admin.audit;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

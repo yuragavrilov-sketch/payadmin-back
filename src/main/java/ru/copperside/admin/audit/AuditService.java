@@ -1,10 +1,10 @@
-package ru.platezh.admin.audit;
+package ru.copperside.admin.audit;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.platezh.admin.operator.Operator;
+import ru.copperside.admin.operator.Operator;
 
 import java.util.Map;
 
