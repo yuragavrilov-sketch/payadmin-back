@@ -1,7 +1,6 @@
 package ru.copperside.admin.note;
 
 import jakarta.persistence.*;
-import lombok.*;
 import ru.copperside.admin.operator.Operator;
 
 import java.time.Instant;
@@ -9,11 +8,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "internal_note")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class InternalNote {
 
     @Id
@@ -51,4 +45,25 @@ public class InternalNote {
     void onUpdate() {
         updatedAt = Instant.now();
     }
+
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+
+    public Operator getOperator() { return operator; }
+    public void setOperator(Operator operator) { this.operator = operator; }
+
+    public String getEntityType() { return entityType; }
+    public void setEntityType(String entityType) { this.entityType = entityType; }
+
+    public String getEntityId() { return entityId; }
+    public void setEntityId(String entityId) { this.entityId = entityId; }
+
+    public String getBody() { return body; }
+    public void setBody(String body) { this.body = body; }
+
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

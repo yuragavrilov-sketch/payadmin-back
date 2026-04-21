@@ -2,7 +2,6 @@ package ru.copperside.admin.view;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,15 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/views")
-@RequiredArgsConstructor
 public class SavedViewController {
 
     private final SavedViewRepository repository;
     private final CurrentOperator currentOperator;
+
+    public SavedViewController(SavedViewRepository repository, CurrentOperator currentOperator) {
+        this.repository = repository;
+        this.currentOperator = currentOperator;
+    }
 
     @GetMapping
     public List<ViewDto> list(@RequestParam String page) {
@@ -39,14 +42,13 @@ public class SavedViewController {
         if (req.isDefault()) {
             unsetExistingDefault(op.getId(), req.page());
         }
-        SavedView view = repository.save(SavedView.builder()
-                .operator(op)
-                .page(req.page())
-                .name(req.name())
-                .filters(req.filters() != null ? req.filters() : Map.of())
-                .isDefault(req.isDefault())
-                .build());
-        return ViewDto.from(view);
+        SavedView view = new SavedView();
+        view.setOperator(op);
+        view.setPage(req.page());
+        view.setName(req.name());
+        view.setFilters(req.filters() != null ? req.filters() : Map.of());
+        view.setDefault(req.isDefault());
+        return ViewDto.from(repository.save(view));
     }
 
     @DeleteMapping("/{id}")

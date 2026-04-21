@@ -1,6 +1,5 @@
 package ru.copperside.admin.operator;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +11,13 @@ import java.time.Instant;
  * и обновляет last_seen_at + меняющиеся атрибуты при последующих.
  */
 @Service
-@RequiredArgsConstructor
 public class OperatorService {
 
     private final OperatorRepository repository;
+
+    public OperatorService(OperatorRepository repository) {
+        this.repository = repository;
+    }
 
     @Transactional
     public Operator syncFromJwt(Jwt jwt) {
@@ -35,13 +37,15 @@ public class OperatorService {
                     existing.setLastSeenAt(Instant.now());
                     return existing;
                 })
-                .orElseGet(() -> repository.save(Operator.builder()
-                        .keycloakSub(sub)
-                        .email(email != null ? email : sub + "@unknown")
-                        .displayName(name)
-                        .role("operator")
-                        .lastSeenAt(Instant.now())
-                        .build()));
+                .orElseGet(() -> {
+                    Operator op = new Operator();
+                    op.setKeycloakSub(sub);
+                    op.setEmail(email != null ? email : sub + "@unknown");
+                    op.setDisplayName(name);
+                    op.setRole("operator");
+                    op.setLastSeenAt(Instant.now());
+                    return repository.save(op);
+                });
     }
 
     private static String firstNonBlank(String... values) {

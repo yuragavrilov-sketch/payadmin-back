@@ -2,7 +2,6 @@ package ru.copperside.admin.view;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
-import lombok.*;
 import org.hibernate.annotations.Type;
 import ru.copperside.admin.operator.Operator;
 
@@ -13,11 +12,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "saved_view")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class SavedView {
 
     @Id
@@ -37,11 +31,9 @@ public class SavedView {
 
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb", nullable = false)
-    @Builder.Default
     private Map<String, Object> filters = new HashMap<>();
 
     @Column(name = "is_default", nullable = false)
-    @Builder.Default
     private boolean isDefault = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -52,4 +44,25 @@ public class SavedView {
         if (createdAt == null) createdAt = Instant.now();
         if (filters == null) filters = new HashMap<>();
     }
+
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+
+    public Operator getOperator() { return operator; }
+    public void setOperator(Operator operator) { this.operator = operator; }
+
+    public String getPage() { return page; }
+    public void setPage(String page) { this.page = page; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public Map<String, Object> getFilters() { return filters; }
+    public void setFilters(Map<String, Object> filters) { this.filters = filters; }
+
+    public boolean isDefault() { return isDefault; }
+    public void setDefault(boolean aDefault) { this.isDefault = aDefault; }
+
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

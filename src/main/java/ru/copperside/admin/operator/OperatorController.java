@@ -1,6 +1,5 @@
 package ru.copperside.admin.operator;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +10,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 public class OperatorController {
 
     private final CurrentOperator currentOperator;
+
+    public OperatorController(CurrentOperator currentOperator) {
+        this.currentOperator = currentOperator;
+    }
 
     @GetMapping("/me")
     public OperatorDto me() {

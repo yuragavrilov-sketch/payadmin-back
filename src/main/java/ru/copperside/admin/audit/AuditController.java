@@ -1,6 +1,5 @@
 package ru.copperside.admin.audit;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +12,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/audit")
-@RequiredArgsConstructor
 public class AuditController {
 
     private final AuditEventRepository repository;
+
+    public AuditController(AuditEventRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping
     public Page<AuditDto> list(

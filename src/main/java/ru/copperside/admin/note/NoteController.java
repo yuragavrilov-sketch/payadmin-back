@@ -3,7 +3,6 @@ package ru.copperside.admin.note;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +18,19 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/notes")
-@RequiredArgsConstructor
 public class NoteController {
 
     private final InternalNoteRepository repository;
     private final CurrentOperator currentOperator;
     private final AuditService auditService;
+
+    public NoteController(InternalNoteRepository repository,
+                          CurrentOperator currentOperator,
+                          AuditService auditService) {
+        this.repository = repository;
+        this.currentOperator = currentOperator;
+        this.auditService = auditService;
+    }
 
     @GetMapping
     public List<NoteDto> list(@RequestParam String entityType, @RequestParam String entityId) {
@@ -36,15 +42,15 @@ public class NoteController {
     @ResponseStatus(HttpStatus.CREATED)
     public NoteDto create(@Valid @RequestBody CreateRequest req, HttpServletRequest http) {
         Operator op = currentOperator.get();
-        InternalNote note = repository.save(InternalNote.builder()
-                .operator(op)
-                .entityType(req.entityType())
-                .entityId(req.entityId())
-                .body(req.body())
-                .build());
+        InternalNote note = new InternalNote();
+        note.setOperator(op);
+        note.setEntityType(req.entityType());
+        note.setEntityId(req.entityId());
+        note.setBody(req.body());
+        InternalNote saved = repository.save(note);
         auditService.record(op, "note.create", req.entityType(), req.entityId(),
-                Map.of("noteId", note.getId().toString()), http);
-        return NoteDto.from(note);
+                Map.of("noteId", saved.getId().toString()), http);
+        return NoteDto.from(saved);
     }
 
     @PutMapping("/{id}")

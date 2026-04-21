@@ -1,7 +1,6 @@
 package ru.copperside.admin.audit;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.copperside.admin.operator.Operator;
@@ -9,10 +8,13 @@ import ru.copperside.admin.operator.Operator;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class AuditService {
 
     private final AuditEventRepository repository;
+
+    public AuditService(AuditEventRepository repository) {
+        this.repository = repository;
+    }
 
     @Transactional
     public AuditEvent record(Operator operator,
@@ -21,15 +23,16 @@ public class AuditService {
                              String entityId,
                              Map<String, Object> payload,
                              HttpServletRequest request) {
-        AuditEvent event = AuditEvent.builder()
-                .operator(operator)
-                .action(action)
-                .entityType(entityType)
-                .entityId(entityId)
-                .payload(payload != null ? payload : Map.of())
-                .ip(request != null ? extractIp(request) : null)
-                .userAgent(request != null ? request.getHeader("User-Agent") : null)
-                .build();
+        AuditEvent event = new AuditEvent();
+        event.setOperator(operator);
+        event.setAction(action);
+        event.setEntityType(entityType);
+        event.setEntityId(entityId);
+        event.setPayload(payload != null ? payload : Map.of());
+        if (request != null) {
+            event.setIp(extractIp(request));
+            event.setUserAgent(request.getHeader("User-Agent"));
+        }
         return repository.save(event);
     }
 
