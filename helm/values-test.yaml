@@ -46,21 +46,12 @@ resources:
     cpu: 200m
     memory: 512Mi
 
+# DB_URL / DB_USER / DB_PASSWORD / KEYCLOAK_ISSUER приходят из Vault через config-server
+# (spring-cloud-starter-config + bootstrap.yml -> pay/app/payadmin/test).
 extraEnvs:
   - name: APP_PROF
     value: test
   - name: SPRING_PROFILES_ACTIVE
     value: test
-  - name: DB_URL
-    value: "jdbc:postgresql://payadmin-db.test.svc.cluster.local:5432/pay_admin"
-  - name: DB_USER
-    value: "pay_admin"
-  - name: DB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: payadmin-db-secret
-        key: password
   - name: DB_SCHEMA
     value: "pay_admin"
-  - name: KEYCLOAK_ISSUER
-    value: "https://keycloak.prod.transcapital.com/realms/svcmgr"

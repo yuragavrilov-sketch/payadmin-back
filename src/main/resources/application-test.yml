@@ -1,0 +1,11 @@
+# test — деплой в TEST. Секреты (DB_*, KEYCLOAK_ISSUER) приходят из Vault через config-server.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER}

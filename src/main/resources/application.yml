@@ -1,11 +1,7 @@
 spring:
-  application:
-    name: pay-admin-api
-
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/pay_admin}
-    username: ${DB_USER:pay_admin}
-    password: ${DB_PASSWORD:pay_admin}
+  profiles:
+    # Дефолтный профиль для локального запуска. В окружениях задавать явно через SPRING_PROFILES_ACTIVE.
+    default: local
 
   jpa:
     open-in-view: false
@@ -25,12 +21,6 @@ spring:
     default-schema: ${DB_SCHEMA:pay_admin}
     create-schemas: true
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:8080/realms/pay-admin}
-
 server:
   port: ${SERVER_PORT:8081}
   forward-headers-strategy: framework
@@ -39,12 +29,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       show-details: when-authorized
+      probes:
+        enabled: true
 
 logging:
   level:
     org.springframework.security: INFO
+    org.springframework.cloud.config: DEBUG
     ru.copperside.admin: DEBUG

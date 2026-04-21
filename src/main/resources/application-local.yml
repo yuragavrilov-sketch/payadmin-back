@@ -1,0 +1,11 @@
+# local — разработка и JUnit. Конфиг-сервер выключен в bootstrap-local.yml.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pay_admin}
+    username: ${DB_USER:pay_admin}
+    password: ${DB_PASSWORD:pay_admin}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:8080/realms/pay-admin}

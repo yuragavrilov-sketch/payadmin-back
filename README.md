@@ -9,6 +9,7 @@
 - REST: `GET /api/me`, `GET /api/audit`, CRUD `/api/notes`, CRUD `/api/views`
 - Auth: JWT resource server, валидация через Keycloak (issuer-uri)
 - БД админки: только операторские данные (audit log, заметки, сохранённые виды). Бизнес-данные (транзакции, мерчанты, споры) живут в core-БД платёжки и читаются через её API.
+- Конфиг: Spring Cloud Config (`spring-cloud-starter-config`), секреты из Vault через config-server по пути `pay/app/payadmin/{profile}`. Локально конфиг-сервер выключен (`bootstrap-local.yml`).
 
 ## Локальный запуск
 
@@ -61,7 +62,12 @@ src/main/java/ru/copperside/admin/
 └── view/                             SavedView + Repository + Controller
 
 src/main/resources/
-├── application.yml
+├── bootstrap.yml                     config-server URIs (prod/test/pcidss)
+├── bootstrap-local.yml               config-server disabled для local
+├── application.yml                   общие дефолты (jpa, flyway, server, management)
+├── application-local.yml             local defaults (DB localhost, Keycloak localhost)
+├── application-test.yml              env-placeholders для секретов из Vault
+├── application-prod.yml              env-placeholders для секретов из Vault
 └── db/migration/V1__init.sql
 
 keycloak/
@@ -77,6 +83,8 @@ keycloak/
 
 ## Переменные окружения
 
+### Local (дефолты)
+
 | Переменная | Default | Описание |
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/pay_admin` | |
@@ -84,3 +92,10 @@ keycloak/
 | `DB_PASSWORD` | `pay_admin` | |
 | `KEYCLOAK_ISSUER` | `http://localhost:8080/realms/pay-admin` | issuer-uri для JWT |
 | `SERVER_PORT` | `8081` | |
+| `DB_SCHEMA` | `pay_admin` | схема БД, создаётся Flyway |
+
+### Test / Prod
+
+`APP_PROF` + `SPRING_PROFILES_ACTIVE` + `DB_SCHEMA` задаются в helm values.
+Остальные переменные (`DB_URL`, `DB_USER`, `DB_PASSWORD`, `KEYCLOAK_ISSUER`) приходят
+из Vault через config-server (`pay/app/payadmin/{profile}`).
