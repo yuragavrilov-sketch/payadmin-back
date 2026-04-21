@@ -3,6 +3,10 @@ spring:
     # Дефолтный профиль для локального запуска. В окружениях задавать явно через SPRING_PROFILES_ACTIVE.
     default: local
 
+  datasource:
+    # Общий config-server может содержать Oracle-дефолты — фиксируем свой драйвер явно.
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     open-in-view: false
     hibernate:

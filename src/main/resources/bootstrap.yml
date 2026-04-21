@@ -11,6 +11,9 @@ spring:
         - https://j-srv-config.paydss.tkbbank.ru:443              # PCIDSS-контур
       label: main
       fail-fast: true
+      # Свои application-{profile}.yml побеждают common-свойства из config-server.
+      # Секреты из Vault всё равно приходят — через ${DB_URL}, ${KEYCLOAK_ISSUER} и т.п.
+      override-none: true
       retry:
         max-attempts: 6
         initial-interval: 1000
