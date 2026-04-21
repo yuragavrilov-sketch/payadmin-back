@@ -46,8 +46,9 @@ resources:
     cpu: 200m
     memory: 512Mi
 
-# DB_URL / DB_USER / DB_PASSWORD / KEYCLOAK_ISSUER приходят из Vault через config-server
-# (spring-cloud-starter-config + bootstrap.yml -> pay/app/payadmin/test).
+# Секрет (DB_PASSWORD) — из Vault через config-server (pay/app/payadmin/test).
+# URL-ы (DB_URL, KEYCLOAK_ISSUER, DB_USER) — env здесь, чтобы не зависеть
+# от полноты Vault-секции и видеть их в helm при ревью.
 extraEnvs:
   - name: APP_PROF
     value: test
@@ -55,3 +56,12 @@ extraEnvs:
     value: test
   - name: DB_SCHEMA
     value: "pay_admin"
+  - name: DB_URL
+    value: "jdbc:postgresql://payadmin-db.test.svc.cluster.local:5432/pay_admin"
+  - name: DB_USER
+    value: "pay_admin"
+  - name: KEYCLOAK_ISSUER
+    value: "https://keycloak.prod.transcapital.com/realms/svcmgr"
+  # Перебиваем Oracle-дефолты из common/test config-server (env > config-server).
+  - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+    value: "org.postgresql.Driver"
