@@ -46,9 +46,8 @@ resources:
     cpu: 500m
     memory: 1Gi
 
-# Секрет (DB_PASSWORD) — из Vault через config-server (pay/app/payadmin/prod).
-# URL-ы (DB_URL, KEYCLOAK_ISSUER, DB_USER) — env здесь, чтобы не зависеть
-# от полноты Vault-секции и видеть их в helm при ревью.
+# Вся конфигурация (datasource, keycloak) — из Vault через config-server
+# по пути pay/app/payadmin/prod. Здесь только маркеры окружения.
 extraEnvs:
   - name: APP_PROF
     value: prod
@@ -56,12 +55,3 @@ extraEnvs:
     value: prod
   - name: DB_SCHEMA
     value: "pay_admin"
-  - name: DB_URL
-    value: "jdbc:postgresql://payadmin-db.pay-service.svc.cluster.local:5432/pay_admin"
-  - name: DB_USER
-    value: "pay_admin"
-  - name: KEYCLOAK_ISSUER
-    value: "https://keycloak.prod.transcapital.com/realms/svcmgr"
-  # Перебиваем Oracle-дефолты из common config-server (env > config-server).
-  - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
-    value: "org.postgresql.Driver"

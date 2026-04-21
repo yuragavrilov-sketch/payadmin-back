@@ -66,8 +66,8 @@ src/main/resources/
 ├── bootstrap-local.yml               config-server disabled для local
 ├── application.yml                   общие дефолты (jpa, flyway, server, management)
 ├── application-local.yml             local defaults (DB localhost, Keycloak localhost)
-├── application-test.yml              env-placeholders для секретов из Vault
-├── application-prod.yml              env-placeholders для секретов из Vault
+├── application-test.yml              пусто, вся конфигурация из Vault
+├── application-prod.yml              пусто, вся конфигурация из Vault
 └── db/migration/V1__init.sql
 
 keycloak/
@@ -81,9 +81,9 @@ keycloak/
 - `internal_note` — операторские заметки к сущностям
 - `saved_view` — сохранённые фильтры на страницах списков
 
-## Переменные окружения
+## Конфигурация
 
-### Local (дефолты)
+### Local (env-переменные с дефолтами)
 
 | Переменная | Default | Описание |
 |---|---|---|
@@ -96,6 +96,42 @@ keycloak/
 
 ### Test / Prod
 
-`APP_PROF` + `SPRING_PROFILES_ACTIVE` + `DB_SCHEMA` задаются в helm values.
-Остальные переменные (`DB_URL`, `DB_USER`, `DB_PASSWORD`, `KEYCLOAK_ISSUER`) приходят
-из Vault через config-server (`pay/app/payadmin/{profile}`).
+В helm values задаются только маркеры окружения: `APP_PROF`, `SPRING_PROFILES_ACTIVE`, `DB_SCHEMA`.
+
+Вся остальная конфигурация — из Vault через config-server по пути
+`pay/app/payadmin/{profile}`. Ключи должны быть в формате **spring-свойств**
+(не env-style), чтобы корректно перебивать значения из `common/{profile}`
+в том же config-server (common содержит Oracle-дефолты JDBC, которые нужно
+переопределить для Postgres).
+
+#### Что положить в Vault
+
+**`pay/app/payadmin/test`:**
+
+```properties
+spring.datasource.url=jdbc:postgresql://payadmin-db.test.svc.cluster.local:5432/pay_admin
+spring.datasource.username=pay_admin
+spring.datasource.password=<реальный пароль>
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak.prod.transcapital.com/realms/svcmgr
+```
+
+**`pay/app/payadmin/prod`:**
+
+```properties
+spring.datasource.url=jdbc:postgresql://payadmin-db.pay-service.svc.cluster.local:5432/pay_admin
+spring.datasource.username=pay_admin
+spring.datasource.password=<реальный пароль>
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak.prod.transcapital.com/realms/svcmgr
+```
+
+> URL-ы для БД и Keycloak пока взяты как предположение — уточнить у DevOps
+> реальные DNS-имена k8s-сервисов и realm Keycloak перед заливкой.
+
+Если `common/{profile}` содержит ещё какие-то JDBC/Hibernate ключи, которые
+ломают Postgres-сервис (`spring.jpa.database-platform`, `hibernate.dialect`
+и т.п.) — посмотреть ответ config-server и добавить их в `pay/app/payadmin/{profile}`:
+```bash
+curl http://j-srv-config:8080/payadmin/test/main | jq
+```

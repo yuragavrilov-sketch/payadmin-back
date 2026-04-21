@@ -1,11 +1,4 @@
-# prod — деплой в PROD. Секреты (DB_*, KEYCLOAK_ISSUER) приходят из Vault через config-server.
-spring:
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER}
+# prod — деплой в PROD.
+# Вся конфигурация приложения (spring.datasource.*, spring.security.oauth2.*)
+# приходит из Vault через config-server по пути pay/app/payadmin/prod.
+# Ключи в Vault должны быть в формате spring-свойств (см. README -> "Что положить в Vault").
