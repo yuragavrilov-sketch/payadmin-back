@@ -4,7 +4,6 @@ spring:
     default: local
 
   datasource:
-    # Общий config-server может содержать Oracle-дефолты — фиксируем свой драйвер явно.
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -43,5 +42,4 @@ management:
 logging:
   level:
     org.springframework.security: INFO
-    org.springframework.cloud.config: DEBUG
     ru.copperside.admin: DEBUG

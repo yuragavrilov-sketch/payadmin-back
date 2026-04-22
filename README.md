@@ -9,7 +9,7 @@
 - REST: `GET /api/me`, `GET /api/audit`, CRUD `/api/notes`, CRUD `/api/views`
 - Auth: JWT resource server, валидация через Keycloak (issuer-uri)
 - БД админки: только операторские данные (audit log, заметки, сохранённые виды). Бизнес-данные (транзакции, мерчанты, споры) живут в core-БД платёжки и читаются через её API.
-- Конфиг: Spring Cloud Config (`spring-cloud-starter-config`), секреты из Vault через config-server по пути `pay/app/payadmin/{profile}`. Локально конфиг-сервер выключен (`bootstrap-local.yml`).
+- Конфиг: локальные `application-{profile}.yml`, значения приходят из env (helm values), секрет БД — через `secretKeyRef` (k8s secret).
 
 ## Локальный запуск
 
@@ -62,12 +62,10 @@ src/main/java/ru/copperside/admin/
 └── view/                             SavedView + Repository + Controller
 
 src/main/resources/
-├── bootstrap.yml                     config-server URIs (prod/test/pcidss)
-├── bootstrap-local.yml               config-server disabled для local
 ├── application.yml                   общие дефолты (jpa, flyway, server, management)
 ├── application-local.yml             local defaults (DB localhost, Keycloak localhost)
-├── application-test.yml              пусто, вся конфигурация из Vault
-├── application-prod.yml              пусто, вся конфигурация из Vault
+├── application-test.yml              test: datasource + issuer-uri через ${DB_*}, ${KEYCLOAK_ISSUER}
+├── application-prod.yml              prod: то же
 └── db/migration/V1__init.sql
 
 keycloak/
@@ -96,42 +94,12 @@ keycloak/
 
 ### Test / Prod
 
-В helm values задаются только маркеры окружения: `APP_PROF`, `SPRING_PROFILES_ACTIVE`, `DB_SCHEMA`.
+Все значения задаются через env в `helm/values-{test,prod}.yaml`:
 
-Вся остальная конфигурация — из Vault через config-server по пути
-`pay/app/payadmin/{profile}`. Ключи должны быть в формате **spring-свойств**
-(не env-style), чтобы корректно перебивать значения из `common/{profile}`
-в том же config-server (common содержит Oracle-дефолты JDBC, которые нужно
-переопределить для Postgres).
+| Переменная | Откуда |
+|---|---|
+| `DB_URL`, `DB_USER`, `KEYCLOAK_ISSUER`, `DB_SCHEMA`, `APP_PROF`, `SPRING_PROFILES_ACTIVE` | inline в values.yaml |
+| `DB_PASSWORD` | `secretKeyRef: payadmin-db-secret.password` |
 
-#### Что положить в Vault
-
-**`pay/app/payadmin/test`:**
-
-```properties
-spring.datasource.url=jdbc:postgresql://payadmin-db.test.svc.cluster.local:5432/pay_admin
-spring.datasource.username=pay_admin
-spring.datasource.password=<реальный пароль>
-spring.datasource.driver-class-name=org.postgresql.Driver
-spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak.prod.transcapital.com/realms/svcmgr
-```
-
-**`pay/app/payadmin/prod`:**
-
-```properties
-spring.datasource.url=jdbc:postgresql://payadmin-db.pay-service.svc.cluster.local:5432/pay_admin
-spring.datasource.username=pay_admin
-spring.datasource.password=<реальный пароль>
-spring.datasource.driver-class-name=org.postgresql.Driver
-spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak.prod.transcapital.com/realms/svcmgr
-```
-
-> URL-ы для БД и Keycloak пока взяты как предположение — уточнить у DevOps
-> реальные DNS-имена k8s-сервисов и realm Keycloak перед заливкой.
-
-Если `common/{profile}` содержит ещё какие-то JDBC/Hibernate ключи, которые
-ломают Postgres-сервис (`spring.jpa.database-platform`, `hibernate.dialect`
-и т.п.) — посмотреть ответ config-server и добавить их в `pay/app/payadmin/{profile}`:
-```bash
-curl http://j-srv-config:8080/payadmin/test/main | jq
-```
+Перед первым деплоем в test/prod DevOps должны создать k8s secret
+`payadmin-db-secret` с ключом `password` в соответствующем namespace.

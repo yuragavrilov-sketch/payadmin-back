@@ -1,4 +1,11 @@
-# test — деплой в TEST.
-# Вся конфигурация приложения (spring.datasource.*, spring.security.oauth2.*)
-# приходит из Vault через config-server по пути pay/app/payadmin/test.
-# Ключи в Vault должны быть в формате spring-свойств (см. README -> "Что положить в Vault").
+# test — деплой в TEST. Все значения приходят из env (helm values-test.yaml).
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER}
